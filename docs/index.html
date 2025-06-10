@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Humana NGO | Excel Data Cleaner - Login</title>
+    
+    <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.jpeg') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="menu-icon" onclick="toggleMenu()">☰</div>
+        <div class="drawer-wrapper">
+            <div class="side-menu" id="sideMenu">         
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleDropdown(this)">
+                        <a href="https://humana-india.org/"><span>HOME</span></a>
+                    </div>
+                </div>
+                
+                <div class="accordion">
+                    <div class="accordion-header">
+                        <a href="https://humana-india.org/"><span>ABOUT US</span></a>
+                        <div class="right-controls">
+                            <span class="plus" onclick="toggleDropdown(this)">+</span>
+                        </div>
+                    </div>
+                    <div class="accordion-content">
+                        <a href="https://humana-india.org/about-us/">Who We Are</a>
+                        <a href="https://humana-india.org/our-partners/">Our Partners</a>
+                    </div>
+                </div>
+                
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleDropdown(this)">
+                        <a href="#"><span>PROGRAMMES & IMPACT</span></a>
+                        <span class="plus">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <a href="https://humana-india.org/education/">Education</a>
+                        <a href="https://humana-india.org/community-development/">Livelihood and Community Development</a>
+                        <a href="https://humana-india.org/health/">Health</a>
+                        <a href="https://humana-india.org/environmental-sustainability/">Environmental Sustainability</a>
+                    </div>
+                </div>
+                
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleDropdown(this)">
+                        <a href="#"><span>REPORTS & PUBLICATIONS</span></a>
+                        <span class="plus">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <a href="https://humana-india.org/annual-report/">Annual Reports</a>
+                        <a href="https://humana-india.org/publications/">Publications</a>
+                        <a href="https://humana-india.org/stories-from-the-field/">Stories from the Field</a>
+                        <a href="https://humana-india.org/audited-financial-reports/">Audited Financial Reports</a>
+                        <a href="https://humana-india.org/foreign-contribution-reports/">Foreign Contribution Reports</a>
+                        <a href="https://humana-india.org/awards-and-recognition/">Awards and Recognition</a>
+                        <a href="https://humana-india.org/videos/">Videos</a>
+                    </div>
+                </div>
+                
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleDropdown(this)">
+                        <a href="#"><span>GET INVOLVED</span></a>
+                        <span class="plus">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <a href="https://humana-india.org/career/">Work with Us</a>
+                        <a href="https://humana-india.org/partner-with-us/">Partner with Us</a>
+                        <a href="https://humana-india.org/contact-us/">Contact Us</a>
+                    </div>
+                </div>
+                
+                <div class="accordion">
+                    <div class="accordion-header" onclick="toggleDropdown(this)">
+                        <a href="https://humana-india.org/blog/"><span>BLOGS</span></a>
+                    </div>
+                </div>
+                
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+                
+                <a href="https://humana-india.org/donate/">
+                    <button class="donate-button">Donate</button>
+                </a>
+            </div>
+            <button class="drawer-wrapper-btn" id="drawerWrapperBtn" onclick="toggleMenu()">
+                <i class="fa-regular fa-circle-xmark"></i>
+            </button>
+        </div>
+        
+        <div class="header-inner">
+            <div class="logo-container">
+                <a href="https://humana-india.org/">
+                    <img src="{{ url_for('static', filename='images/Humana-logo-new.jpg') }}" alt="Humana Logo">
+                </a>
+            </div>
+            <nav class="header-nav">
+                <div class="nav-item">
+                    <a href="https://humana-india.org/">Home</a>
+                </div>
+                <div class="about-us nav-item">
+                    <a href="https://humana-india.org/about-us/">About Us
+                        <svg width="7" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L6 6L11 1" stroke="#404040" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                    <div class="dropdown about">
+                        <a href="https://humana-india.org/about-us/">Who We Are</a>
+                        <a href="https://humana-india.org/our-partners/" class="bottom-link">Our Partners</a>
+                    </div>
+                </div>
+                <div class="programmes nav-item">
+                    <a href="#">Programmes & Impact
+                        <svg width="7" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L6 6L11 1" stroke="#404040" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                    <div class="dropdown programmes">
+                        <a href="https://humana-india.org/education/">Education</a>
+                        <a href="https://humana-india.org/community-development/">Livelihood and Community Development</a>
+                        <a href="https://humana-india.org/health/">Health</a>
+                        <a href="https://humana-india.org/environmental-sustainability/" class="bottom-link">Environmental Sustainability</a>
+                    </div>
+                </div>
+                <div class="reports nav-item">
+                    <a href="#">Reports & Publications
+                        <svg width="7" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L6 6L11 1" stroke="#404040" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                    <div class="dropdown reports">
+                        <a href="https://humana-india.org/annual-report/">Annual Reports</a>
+                        <a href="https://humana-india.org/publications/">Publications</a>
+                        <a href="https://humana-india.org/stories-from-the-field/">Stories from the Field</a>
+                        <a href="https://humana-india.org/audited-financial-reports/">Audited Financial Reports</a>
+                        <a href="https://humana-india.org/foreign-contribution-reports/">Foreign Contribution Reports</a>
+                        <a href="https://humana-india.org/awards-and-recognition/">Awards and Recognition</a>
+                        <a href="https://humana-india.org/videos/" class="bottom-link">Videos</a>
+                    </div>
+                </div>
+                <div class="involved nav-item">
+                    <a href="#">Get Involved
+                        <svg width="7" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L6 6L11 1" stroke="#404040" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                    <div class="dropdown involved">
+                        <a href="https://humana-india.org/career/">Work with Us</a>
+                        <a href="https://humana-india.org/partner-with-us/">Partner with Us</a>
+                        <a href="https://humana-india.org/contact-us/" class="bottom-link">Contact Us</a>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="https://humana-india.org/blog/">Blogs</a>
+                </div>
+                <a href="https://humana-india.org/donate/">
+                    <button class="donate-button">Donate</button>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h2>Login</h2>
+            <p class="tagline">Login to clean and format your Excel data in seconds.</p>
+            
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="{{ 'error-message' if category == 'error' else 'success-message' if category == 'success' else 'info-message' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" class="login-form">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required />
+        
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required />
+        
+                <div class="form-extras">
+                    <label><input type="checkbox" /> Remember me</label>
+                    <a href="#" onclick="alert('Please contact your administrator for password reset.')">Forgot password?</a>
+                </div>
+        
+                <button type="submit" class="login-button">Login</button>
+            </form>
+        </div>
+    </div>      
+    
+    <script>
+        function toggleMenu() {
+            const drawerWrapper = document.querySelector('.drawer-wrapper');
+            drawerWrapper.classList.toggle('show');
+        }
+
+        function toggleDropdown(element) {
+            const content = element.parentElement.querySelector('.accordion-content');
+            const plus = element.querySelector('.plus');
+            
+            if (content) {
+                if (content.style.display === 'flex') {
+                    content.style.display = 'none';
+                    if (plus) plus.textContent = '+';
+                } else {
+                    content.style.display = 'flex';
+                    if (plus) plus.textContent = '-';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
