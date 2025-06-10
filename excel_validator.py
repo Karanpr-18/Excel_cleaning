@@ -107,12 +107,14 @@ class KadamValidator:
         Returns dict with paths to generated files or None if error
         """
         try:
-            # Read the Excel file
-            data_df = pd.read_excel(file_path, sheet_name='Compile Report')
+            # Read the Excel file - use the first sheet available
+            excel_file = pd.ExcelFile(file_path)
+            first_sheet_name = excel_file.sheet_names[0]
+            data_df = pd.read_excel(file_path, sheet_name=first_sheet_name)
             
             # Load workbook for styling
             wb = load_workbook(file_path)
-            ws = wb['Compile Report']
+            ws = wb[first_sheet_name]
             
             validation_errors = []
             

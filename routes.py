@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from app import app
 from excel_validator import KadamValidator
 from validators.kadam_plus_validator import KadamPlusValidator
+from file_manager import FileManager
 
 # Hardcoded credentials for MVP
 VALID_CREDENTIALS = {
@@ -82,6 +83,10 @@ def upload():
                 upload_path = os.path.join(app.config['UPLOAD_FOLDER'], upload_filename)
                 file.save(upload_path)
                 
+                # Cleanup old files to maintain limits
+                file_manager = FileManager(app.config['UPLOAD_FOLDER'], app.config['DOWNLOAD_FOLDER'])
+                file_manager.cleanup_all()
+                
                 # Get validation method from form
                 validation_method = request.form.get('validation_method', 'kadam')
                 
@@ -94,6 +99,9 @@ def upload():
                 output_files = validator.validate_excel(upload_path, unique_id, app.config['DOWNLOAD_FOLDER'])
                 
                 if output_files:
+                    # Cleanup old download files after creating new ones
+                    file_manager.manage_downloads()
+                    
                     # Store file info in session for downloads
                     session['processed_files'] = {
                         'validated_output': output_files['validated_output'],
@@ -179,7 +187,7 @@ def clear_files():
 @app.errorhandler(413)
 def too_large(e):
     """Handle file too large error"""
-    flash('File is too large. Maximum size is 16MB.', 'error')
+    flash('File is too large. Maximum size is 500MB.', 'error')
     return redirect(url_for('upload'))
 
 @app.errorhandler(404)
