@@ -6,7 +6,7 @@ import os
 import logging
 
 class KadamPlusValidator:
-    """Kadam+ Excel file validator"""
+    """Kadam+ Excel file validator - enhanced version with additional validation features"""
     
     def __init__(self):
         # Enhanced validation rules for Kadam+
@@ -236,6 +236,7 @@ class KadamPlusValidator:
             
             # Save highlighted workbook
             wb.save(output_path)
+            wb.close()  # Explicitly close the workbook to release file handles
             
             # Create validation report
             if validation_errors:

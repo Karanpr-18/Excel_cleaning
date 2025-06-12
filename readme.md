@@ -16,6 +16,13 @@ This tool helps users clean and process Excel files by providing automated data 
 3. Select your Excel file
 4. Follow the prompts to clean your data
 
+## To run this Flask application, you can use the following commands:
+1. python main.py
+ or
+1. venv\Scripts\activate
+2. pip install -r requirements.txt
+3. gunicorn -w 4 -b 0.0.0.0:5000 app:app
+
 ## Requirements
 - Python 3.11.x
 - Required Python packages (list them in requirements.txt)

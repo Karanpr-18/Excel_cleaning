@@ -236,6 +236,7 @@ class KadamValidator:
             
             # Save highlighted workbook
             wb.save(output_path)
+            wb.close()  # Explicitly close the workbook to release file handles
             
             # Create validation report
             if validation_errors:

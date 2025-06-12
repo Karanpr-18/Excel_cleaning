@@ -104,17 +104,26 @@ def upload():
                     
                     # Store file info in session for downloads
                     session['processed_files'] = {
-                        'validated_output': output_files['validated_output'],
-                        'validation_report': output_files['validation_report'],
+                        'validated_output': os.path.abspath(output_files['validated_output']),
+                        'validation_report': os.path.abspath(output_files['validation_report']),
                         'original_name': base_name
                     }
                     flash('File processed successfully! You can now download the results.', 'success')
+                    
+                    # Clean up uploaded file after successful processing
+                    try:
+                        if os.path.exists(upload_path):
+                            os.remove(upload_path)
+                    except Exception as cleanup_error:
+                        logging.warning(f"Could not remove uploaded file {upload_path}: {str(cleanup_error)}")
                 else:
                     flash('Error processing the file. Please check the file format and try again.', 'error')
-                
-                # Clean up uploaded file
-                if os.path.exists(upload_path):
-                    os.remove(upload_path)
+                    # Clean up uploaded file even if processing failed
+                    try:
+                        if os.path.exists(upload_path):
+                            os.remove(upload_path)
+                    except Exception as cleanup_error:
+                        logging.warning(f"Could not remove uploaded file {upload_path}: {str(cleanup_error)}")
                     
             except Exception as e:
                 logging.error(f"Error processing file: {str(e)}")
@@ -148,6 +157,9 @@ def download_file(file_type):
             flash('Invalid download type.', 'error')
             return redirect(url_for('upload'))
         
+        # Normalize the file path to use forward slashes
+        file_path = os.path.normpath(file_path).replace('\\', '/')
+        
         if os.path.exists(file_path):
             return send_file(
                 file_path,
@@ -156,6 +168,7 @@ def download_file(file_type):
                 mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
         else:
+            logging.error(f"File not found at path: {file_path}")
             flash('File not found. Please process a file first.', 'error')
             return redirect(url_for('upload'))
             
