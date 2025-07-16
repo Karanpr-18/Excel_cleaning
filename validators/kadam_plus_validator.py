@@ -1,3 +1,4 @@
+
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
@@ -6,7 +7,7 @@ import os
 import logging
 
 class KadamPlusValidator:
-    """Kadam+ Excel file validator - enhanced version with additional validation features"""
+    """Kadam+ Excel file validator - optimized enhanced version"""
     
     def __init__(self):
         # Enhanced validation rules for Kadam+
@@ -100,14 +101,101 @@ class KadamPlusValidator:
                 return 40
             else:
                 return None
-    
+
+    def validate_cell(self, value, rules, col_name, data_df, row_idx):
+        """Validate a single cell value against rules"""
+        has_error = False
+        error_reason = ""
+        
+        # Apply validation rules
+        for rule in rules:
+            rule_lower = rule.lower()
+            
+            if rule_lower == "not null":
+                if pd.isnull(value) or (isinstance(value, str) and str(value).strip() == ""):
+                    has_error = True
+                    error_reason = "Value is null or empty"
+            elif rule_lower == "numeric":
+                try:
+                    float(value)
+                except Exception:
+                    has_error = True
+                    error_reason = "Value is not numeric"
+            elif rule_lower == "date":
+                if pd.to_datetime(value, errors='coerce') is pd.NaT:
+                    has_error = True
+                    error_reason = "Value is not a valid date"
+            elif rule_lower == "no_special_chars":
+                if not re.match(r"^[A-Za-z ]*$", str(value)):
+                    has_error = True
+                    error_reason = "Value contains special characters"
+            elif rule_lower == "age_not_less_than_7":
+                try:
+                    age_val = float(value)
+                    if age_val < 7:
+                        has_error = True
+                        error_reason = "Age is less than 7"
+                except Exception:
+                    pass
+            
+            if has_error:
+                break
+        
+        # Enhanced age validation with Date of Birth and Enrolment Date
+        if col_name == "Student's Age" and not has_error:
+            try:
+                if "Student's Date of Birth" in data_df.columns and "Enrolment Date" in data_df.columns:
+                    dob = data_df["Student's Date of Birth"].iloc[row_idx - 2]
+                    enrolment_date = data_df["Enrolment Date"].iloc[row_idx - 2]
+                    
+                    if not pd.isna(dob) and not pd.isna(enrolment_date):
+                        try:
+                            dob_dt = pd.to_datetime(dob, errors='coerce')
+                            enrolment_date_dt = pd.to_datetime(enrolment_date, errors='coerce')
+                            
+                            if not pd.isna(dob_dt) and not pd.isna(enrolment_date_dt):
+                                age_in_years = (enrolment_date_dt - dob_dt).days / 365.25
+                                
+                                if age_in_years < 6.6 or age_in_years > 14:
+                                    has_error = True
+                                    error_reason = "Calculated age is less than 6.6 years or greater than 14"
+                        except Exception:
+                            has_error = True
+                            error_reason = "Invalid Date of Birth or Enrolment Date"
+            except Exception:
+                pass
+        
+        # Check score limits based on age
+        if not has_error:
+            age_value = data_df["Student's Age"].iloc[row_idx - 2] if "Student's Age" in data_df.columns else None
+            
+            if col_name in self.original_limit_columns:
+                max_marks = self.get_max_marks(age_value, total=False)
+            elif col_name in self.new_limit_columns:
+                max_marks = self.get_max_marks(age_value, total=True)
+            elif col_name in self.grade_test_columns:
+                max_marks = 40
+            else:
+                max_marks = None
+            
+            if max_marks is not None:
+                try:
+                    val = float(value)
+                    if val > max_marks:
+                        has_error = True
+                        error_reason = f"Value exceeds max allowed marks ({max_marks})"
+                except Exception:
+                    pass
+        
+        return has_error, error_reason
+
     def validate_excel(self, file_path, unique_id, download_folder='downloads'):
         """
         Validate Excel file using Kadam+ method and generate output files
         Returns dict with paths to generated files or None if error
         """
         try:
-            # Read the Excel file - use the first sheet available
+            # Read the Excel file
             excel_file = pd.ExcelFile(file_path)
             first_sheet_name = excel_file.sheet_names[0]
             data_df = pd.read_excel(file_path, sheet_name=first_sheet_name)
@@ -118,107 +206,23 @@ class KadamPlusValidator:
             
             validation_errors = []
             
-            # Process each column according to validation rules
+            # Create column mapping for faster lookup
+            col_mapping = {}
+            for cell in ws[1]:
+                if cell.value in self.validation_rules:
+                    col_mapping[cell.value] = cell.column_letter
+            
+            # Process each column with optimized validation
             for col_name, rules in self.validation_rules.items():
-                if col_name not in data_df.columns:
+                if col_name not in data_df.columns or col_name not in col_mapping:
                     continue
                 
-                # Find column letter in worksheet
-                col_letter = None
-                for cell in ws[1]:
-                    if cell.value == col_name:
-                        col_letter = cell.column_letter
-                        break
-                if col_letter is None:
-                    continue
+                col_letter = col_mapping[col_name]
                 
-                # Validate each cell in the column
+                # Optimized validation for each cell
                 for i, value in enumerate(data_df[col_name], start=2):
-                    has_error = False
-                    error_reason = ""
+                    has_error, error_reason = self.validate_cell(value, rules, col_name, data_df, i)
                     
-                    # Apply validation rules
-                    for rule in rules:
-                        rule_lower = rule.lower()
-                        
-                        if rule_lower == "not null":
-                            if pd.isnull(value) or (isinstance(value, str) and str(value).strip() == ""):
-                                has_error = True
-                                error_reason = "Value is null or empty"
-                        elif rule_lower == "numeric":
-                            try:
-                                float(value)
-                            except Exception:
-                                has_error = True
-                                error_reason = "Value is not numeric"
-                        elif rule_lower == "date":
-                            if pd.to_datetime(value, errors='coerce') is pd.NaT:
-                                has_error = True
-                                error_reason = "Value is not a valid date"
-                        elif rule_lower == "no_special_chars":
-                            if not re.match(r"^[A-Za-z ]*$", str(value)):
-                                has_error = True
-                                error_reason = "Value contains special characters"
-                        elif rule_lower == "age_not_less_than_7":
-                            try:
-                                age_val = float(value)
-                                if age_val < 7:
-                                    has_error = True
-                                    error_reason = "Age is less than 7"
-                            except Exception:
-                                pass
-                        
-                        if has_error:
-                            break
-                    
-                    # Enhanced age validation with Date of Birth and Enrolment Date
-                    if col_name == "Student's Age" and not has_error:
-                        try:
-                            if "Student's Date of Birth" in data_df.columns and "Enrolment Date" in data_df.columns:
-                                dob = data_df["Student's Date of Birth"].iloc[i - 2]
-                                enrolment_date = data_df["Enrolment Date"].iloc[i - 2]
-                                
-                                if not pd.isna(dob) and not pd.isna(enrolment_date):
-                                    try:
-                                        dob_dt = pd.to_datetime(dob, errors='coerce')
-                                        enrolment_date_dt = pd.to_datetime(enrolment_date, errors='coerce')
-                                        
-                                        if not pd.isna(dob_dt) and not pd.isna(enrolment_date_dt):
-                                            age_in_years = (enrolment_date_dt - dob_dt).days / 365.25
-                                            
-                                            # Check if age is less than 6.6 or greater than 14
-                                            if age_in_years < 6.6 or age_in_years > 14:
-                                                has_error = True
-                                                error_reason = "Calculated age is less than 6.6 years or greater than 14"
-                                    except Exception:
-                                        has_error = True
-                                        error_reason = "Invalid Date of Birth or Enrolment Date"
-                        except Exception:
-                            pass
-                    
-                    # Check score limits based on age
-                    if not has_error:
-                        age_value = data_df["Student's Age"].iloc[i - 2] if "Student's Age" in data_df.columns else None
-                        
-                        if col_name in self.original_limit_columns:
-                            max_marks = self.get_max_marks(age_value, total=False)
-                        elif col_name in self.new_limit_columns:
-                            max_marks = self.get_max_marks(age_value, total=True)
-                        elif col_name in self.grade_test_columns:
-                            max_marks = 40  # fixed max for all grade tests
-                        else:
-                            max_marks = None
-                        
-                        if max_marks is not None:
-                            try:
-                                val = float(value)
-                                if val > max_marks:
-                                    has_error = True
-                                    error_reason = f"Value exceeds max allowed marks ({max_marks})"
-                            except Exception:
-                                pass
-                    
-                    # Mark errors in worksheet and record them
                     if has_error:
                         cell_ref = f"{col_letter}{i}"
                         ws[cell_ref].fill = self.red_fill
@@ -236,13 +240,12 @@ class KadamPlusValidator:
             
             # Save highlighted workbook
             wb.save(output_path)
-            wb.close()  # Explicitly close the workbook to release file handles
+            wb.close()
             
             # Create validation report
             if validation_errors:
                 report_df = pd.DataFrame(validation_errors)
             else:
-                # Create empty DataFrame with proper column structure
                 report_df = pd.DataFrame({
                     "Row": pd.Series([], dtype='int64'),
                     "Column": pd.Series([], dtype='object'),

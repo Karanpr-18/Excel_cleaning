@@ -4,8 +4,9 @@ import logging
 from flask import render_template, request, redirect, url_for, session, flash, send_file, jsonify
 from werkzeug.utils import secure_filename
 from app import app
-from excel_validator import KadamValidator
+from validators.kadam_validator import KadamValidator
 from validators.kadam_plus_validator import KadamPlusValidator
+from validators.women_emp_validator import WomenEmpValidator
 from file_manager import FileManager
 
 # Hardcoded credentials for MVP
@@ -93,6 +94,8 @@ def upload():
                 # Process the file based on selected method
                 if validation_method == 'kadam_plus':
                     validator = KadamPlusValidator()
+                elif validation_method == 'women_emp':
+                    validator = WomenEmpValidator()
                 else:
                     validator = KadamValidator()
                 
